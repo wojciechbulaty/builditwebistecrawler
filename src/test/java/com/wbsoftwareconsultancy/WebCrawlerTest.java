@@ -22,9 +22,10 @@ public class WebCrawlerTest {
         wm.stubFor(get(urlEqualTo("/"))
                 .willReturn(aResponse()
                         .withStatus(200)
+                        .withHeader("Content-Type", "text/html; charset=utf-8")
                         .withBody("<html><body>Hello world!</body></html>")));
 
-        Page page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
+        WebElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
 
         assertNotNull(page);
         assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +
@@ -36,13 +37,15 @@ public class WebCrawlerTest {
         wm.stubFor(get(urlEqualTo("/"))
                 .willReturn(aResponse()
                         .withStatus(200)
+                        .withHeader("Content-Type", "text/html; charset=utf-8")
                         .withBody("<html><body><a href=\"contact.html\"></a></body></html>")));
         wm.stubFor(get(urlEqualTo("/contact.html"))
                 .willReturn(aResponse()
                         .withStatus(200)
+                        .withHeader("Content-Type", "text/html; charset=utf-8")
                         .withBody("<html><body>This is contact!</body></html>")));
 
-        Page page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
+        WebElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
 
         assertNotNull(page);
         assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +
@@ -59,9 +62,10 @@ public class WebCrawlerTest {
         wm.stubFor(get(urlEqualTo("/"))
                 .willReturn(aResponse()
                         .withStatus(200)
+                        .withHeader("Content-Type", "text/html; charset=utf-8")
                         .withBody("<html><body><a href=\"http://google.com\"></a><a href=\"http://twitter.com\"></a></body></html>")));
 
-        Page page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
+        WebElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
 
         assertNotNull(page);
         assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +
@@ -69,20 +73,27 @@ public class WebCrawlerTest {
     }
 
     @Test
-    @Ignore
-    // The crawler should be limited to one domain.
-    // Given a starting URL – say http://wiprodigital.com - it should visit all pages within the domain,
-    // but not follow the links to external sites such as Google or Twitter.
+    // (...) links to static content such as images for each respective page.
     public void fetchesImages() throws Exception {
         wm.stubFor(get(urlEqualTo("/"))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withBody("<html><body><a href=\"img.jpg\"></a></body></html>")));
+                        .withHeader("Content-Type", "text/html; charset=utf-8")
+                        .withBody("<html><body><a href=\"img.jpg\"></a><a href=\"img.png\"></a></body></html>")));
+        wm.stubFor(get(urlEqualTo("/img.jpg"))
+                .willReturn(aResponse()
+                        .withStatus(200)));
+        wm.stubFor(get(urlEqualTo("/img.png"))
+                .willReturn(aResponse()
+                        .withStatus(200)));
 
-        Page page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
+        WebElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
 
         assertNotNull(page);
-        assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n");
+        assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +
+                "External domain links: none\n" +
+                "    Static file http://localhost:9999/img.jpg\n" +
+                "    Static file http://localhost:9999/img.png");
     }
 
     @Test

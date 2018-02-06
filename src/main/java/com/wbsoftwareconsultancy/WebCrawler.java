@@ -1,6 +1,8 @@
 package com.wbsoftwareconsultancy;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -10,17 +12,24 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 public class WebCrawler {
-    public Page crawl(String rootUrl) throws IOException {
+    public WebElement crawl(String rootUrl) throws IOException {
         if (!rootUrl.startsWith("http")) {
             throw new IllegalArgumentException("The url should start with http");
         }
         return crawlPage(rootUrl);
     }
 
-    private Page crawlPage(String crawlUrl) throws IOException {
-        Elements links = Jsoup.connect(crawlUrl).get().select("a");
+    private WebElement crawlPage(String crawlUrl) throws IOException {
+        Connection connect = Jsoup.connect(crawlUrl);
+        connect.execute();
+        String contentType = connect.response().contentType();
+        if (contentType == null || !contentType.contains("text/html")) {
+            return new StaticContent(crawlUrl);
+        }
+        Document document = connect.get();
+        Elements links = document.select("a");
 
-        List<Page> subPages = links.stream()
+        List<WebElement> subPages = links.stream()
                 .map(WebCrawler::hrefAttribute)
                 .filter(WebCrawler::isRelativeLink)
                 .map(relativeUrl -> crawlUrl + "/" + relativeUrl)
@@ -35,7 +44,7 @@ public class WebCrawler {
         return new Page(crawlUrl, subPages, externalDomainLinks);
     }
 
-    public Page crawlPageOrHandleException(String url) {
+    public WebElement crawlPageOrHandleException(String url) {
         try {
             return crawlPage(url);
         } catch (IOException e) {

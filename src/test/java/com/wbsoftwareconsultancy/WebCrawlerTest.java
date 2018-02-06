@@ -24,13 +24,53 @@ public class WebCrawlerTest {
                         .withStatus(200)
                         .withBody("<html><body>Hello world!</body></html>")));
 
-        SiteMap siteMap = new WebCrawler().crawl("http://localhost" + WIREMOCK_PORT);
+        Page page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
 
-        assertNotNull(siteMap);
-        assertThat(siteMap.asString()).isEqualTo("Page: http://localhost" + WIREMOCK_PORT +
-                "    Internal links: none\n" +
-                "    External links: none\n" +
-                "    Static content links: none");
+        assertNotNull(page);
+        assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +
+                "Static content: none\n");
+    }
+
+    @Test
+    public void crawlsASubPageWithOneRelativeLink() throws Exception {
+        wm.stubFor(get(urlEqualTo("/"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBody("<html><body><a href=\"contact.html\"></a></body></html>")));
+        wm.stubFor(get(urlEqualTo("/contact.html"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBody("<html><body>This is contact!</body></html>")));
+
+        Page page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
+
+        assertNotNull(page);
+        assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +
+                "Static content: none\n" +
+                "    Page http://localhost:" + WIREMOCK_PORT + "/contact.html\n" +
+                "    Static content: none\n");
+    }
+
+    @Test
+    public void supportsOnlyRootUrls() throws Exception {
+        try {
+            new WebCrawler().crawl("/aRelativeUrl");
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertThat(e).hasMessage("The url should start with http");
+        }
+    }
+
+    @Test
+    @Ignore
+    public void loadsTheSubPagesInParallel() throws Exception {
+        fail("TODO");
+    }
+
+    @Test
+    @Ignore
+    public void skipsAnchorTagsWithNoHrefAttribute() throws Exception {
+        fail("TODO");
     }
 
     @Test

@@ -16,3 +16,11 @@ mvn clean install
 cd target
 unzip release.zip
 
+What I would do next?
+
+* Run the build on Windows
+* Ask business if the sitemap should be flat or hierarchical
+* Replace recursion with a work queue
+* Discuss the API with the stakeholders to see if this tools is what they
+would like to use.
+* Implement sad-paths, e.g. what happens when the host does not respond or does not exist

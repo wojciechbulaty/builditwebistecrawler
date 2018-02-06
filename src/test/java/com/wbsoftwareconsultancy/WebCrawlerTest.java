@@ -28,7 +28,7 @@ public class WebCrawlerTest {
 
         assertNotNull(page);
         assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +
-                "Static content: none\n");
+                "External domain links: none\n");
     }
 
     @Test
@@ -46,9 +46,43 @@ public class WebCrawlerTest {
 
         assertNotNull(page);
         assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +
-                "Static content: none\n" +
+                "External domain links: none\n" +
                 "    Page http://localhost:" + WIREMOCK_PORT + "/contact.html\n" +
-                "    Static content: none\n");
+                "    External domain links: none\n");
+    }
+
+    @Test
+    // The crawler should be limited to one domain.
+    // Given a starting URL – say http://wiprodigital.com - it should visit all pages within the domain,
+    // but not follow the links to external sites such as Google or Twitter.
+    public void doesNotFollowExternalLinks() throws Exception {
+        wm.stubFor(get(urlEqualTo("/"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBody("<html><body><a href=\"http://google.com\"></a><a href=\"http://twitter.com\"></a></body></html>")));
+
+        Page page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
+
+        assertNotNull(page);
+        assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +
+            "External domain links: http://google.com, http://twitter.com\n");
+    }
+
+    @Test
+    @Ignore
+    // The crawler should be limited to one domain.
+    // Given a starting URL – say http://wiprodigital.com - it should visit all pages within the domain,
+    // but not follow the links to external sites such as Google or Twitter.
+    public void fetchesImages() throws Exception {
+        wm.stubFor(get(urlEqualTo("/"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBody("<html><body><a href=\"img.jpg\"></a></body></html>")));
+
+        Page page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
+
+        assertNotNull(page);
+        assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n");
     }
 
     @Test
@@ -94,15 +128,6 @@ public class WebCrawlerTest {
     @Test
     @Ignore
     public void followsRelativeLinks() throws Exception {
-        fail("TODO");
-    }
-
-    @Test
-    @Ignore
-    // The crawler should be limited to one domain.
-    // Given a starting URL – say http://wiprodigital.com - it should visit all pages within the domain,
-    // but not follow the links to external sites such as Google or Twitter.
-    public void doesNotFollowExternalLinks() throws Exception {
         fail("TODO");
     }
 

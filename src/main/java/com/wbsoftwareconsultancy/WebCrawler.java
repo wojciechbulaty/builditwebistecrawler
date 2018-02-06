@@ -6,7 +6,8 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 public class WebCrawler {
     public Page crawl(String rootUrl) throws IOException {
@@ -17,16 +18,21 @@ public class WebCrawler {
     }
 
     private Page crawlPage(String crawlUrl) throws IOException {
-        Elements links = Jsoup.connect(crawlUrl)
-                .get()
-                .select("a");
+        Elements links = Jsoup.connect(crawlUrl).get().select("a");
+
         List<Page> subPages = links.stream()
                 .map(WebCrawler::hrefAttribute)
                 .filter(WebCrawler::isRelativeLink)
                 .map(relativeUrl -> crawlUrl + "/" + relativeUrl)
                 .map(this::crawlPageOrHandleException)
-                .collect(Collectors.toList());
-        return new Page(crawlUrl, subPages);
+                .collect(toList());
+
+        List<String> externalDomainLinks = links.stream()
+                .map(WebCrawler::hrefAttribute)
+                .filter(WebCrawler::isExternalLink)
+                .collect(toList());
+
+        return new Page(crawlUrl, subPages, externalDomainLinks);
     }
 
     public Page crawlPageOrHandleException(String url) {
@@ -45,5 +51,9 @@ public class WebCrawler {
 
     public static boolean isRelativeLink(String url) {
         return !url.startsWith("http");
+    }
+
+    public static boolean isExternalLink(String url) {
+        return url.startsWith("http");
     }
 }

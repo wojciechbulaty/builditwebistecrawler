@@ -2,18 +2,16 @@ package com.wbsoftwareconsultancy;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static java.util.Collections.*;
+import static java.util.Collections.synchronizedSet;
 import static java.util.stream.Collectors.toList;
 
 public class WebCrawler {
@@ -42,8 +40,8 @@ public class WebCrawler {
         }
         Elements links = connect.get().select("a");
 
-        List<WebElement> subPages = links.stream()
-                .map(WebCrawler::hrefAttribute)
+        List<WebElement> subPages = links.parallelStream()
+                .map(element -> element.attr("href"))
                 .filter(url -> !url.startsWith("#"))
                 .filter(url -> url.startsWith(rootUrl) || !url.startsWith("http"))
                 .map(url -> url.startsWith(rootUrl) ? url : crawlUrl + "/" + url)
@@ -52,7 +50,7 @@ public class WebCrawler {
                 .collect(toList());
 
         List<String> externalDomainLinks = links.stream()
-                .map(WebCrawler::hrefAttribute)
+                .map(element -> element.attr("href"))
                 .filter(url -> !url.startsWith(rootUrl) && url.startsWith("http"))
                 .collect(toList());
 
@@ -69,13 +67,5 @@ public class WebCrawler {
             e.printStackTrace();
             return new ErrorProcessingUrl(url, e);
         }
-    }
-
-    public static String hrefAttribute(Element element) {
-        return element.attr("href");
-    }
-
-    public static boolean isExternalLink(String url) {
-        return url.startsWith("http");
     }
 }

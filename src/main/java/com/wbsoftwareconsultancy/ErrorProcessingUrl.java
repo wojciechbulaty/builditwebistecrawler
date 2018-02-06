@@ -18,6 +18,6 @@ public class ErrorProcessingUrl implements WebElement {
 
     @Override
     public String asString(int indent) {
-        return "Error processing url " + url + " " + e.getMessage();
+        return "Error processing url " + url + " " + e.toString();
     }
 }

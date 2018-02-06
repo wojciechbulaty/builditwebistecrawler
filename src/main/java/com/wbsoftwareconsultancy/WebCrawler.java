@@ -64,7 +64,7 @@ public class WebCrawler {
             return crawlPage(url, rootUrl, alreadyCrawledUrls);
         } catch (IOException e) {
             // TODO implement sad-path
-            e.printStackTrace();
+//            e.printStackTrace();
             return new ErrorProcessingUrl(url, e);
         }
     }

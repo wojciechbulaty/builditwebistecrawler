@@ -21,7 +21,7 @@ java -cp target/buildit-webiste-crawler-1.0-SNAPSHOT-jar-with-dependencies.jar c
 * Run the build on Windows
 * Ask business if the sitemap should be flat or hierarchical
 * Replace recursion with a work queue
-* Discuss the API with the stakeholders to see if this tools is what they
+* Discuss the API with the stakeholders to see if this tool is what they have imagines they would like to see
 would like to use.
 * Implement sad-paths, e.g. what happens when the host does not respond or does not exist
 * Refactor WebElement, it has got a few code smells

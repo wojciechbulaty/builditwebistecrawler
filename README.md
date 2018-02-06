@@ -1,22 +1,23 @@
-Clarification
+# Clarification
 
-I would not write this crawler in a real environment, I would just probably use
-https://github.com/yasserg/crawler4j or something similar.
+I would not write this crawler in a real environment.
+I would just probably use https://github.com/yasserg/crawler4j
+or something similar.
 
-I am assuming you want me to wrote some code, so I will write the crawler code
+I am assuming you want me to write some code, so I will write the crawler code
 but I will use jsoup to help me with that.
 
-To build the project run:
+# Building the project
 
 mvn clean install
 
-To run the web crawler run:
+# Run the web crawler
 
 mvn clean install
 cd target
 unzip release.zip
 
-What I would do next?
+# What I would do next?
 
 * Run the build on Windows
 * Ask business if the sitemap should be flat or hierarchical
@@ -26,3 +27,4 @@ would like to use.
 * Implement sad-paths, e.g. what happens when the host does not respond or does not exist
 * Refactor WebElement, it has got a few code smells
 * Implement all the ignored tests in WebCrawlerTest (after consulting with the business)
+* More real tests on real websites to find bugs

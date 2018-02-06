@@ -68,4 +68,10 @@ public class WebCrawler {
             return new ErrorProcessingUrl(url, e);
         }
     }
+
+    public static void main(String[] args) throws IOException {
+        WebElement crawl = new WebCrawler().crawl(args[0]);
+        System.out.println("=============================================================");
+        System.out.println(crawl.asString());
+    }
 }

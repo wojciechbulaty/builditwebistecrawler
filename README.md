@@ -28,3 +28,4 @@ would like to use.
 * Refactor WebElement, it has got a few code smells
 * Implement all the ignored tests in WebCrawlerTest (after consulting with the business)
 * More real tests on real websites to find bugs
+* Validation of command line input

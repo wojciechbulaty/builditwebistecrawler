@@ -13,11 +13,11 @@ public class ErrorProcessingUrl implements WebElement {
 
     @Override
     public String asString() {
-        return "Error processing url " + url + " " + e.getMessage();
+        return asString(0);
     }
 
     @Override
     public String asString(int indent) {
-        return null;
+        return "Error processing url " + url + " " + e.getMessage();
     }
 }

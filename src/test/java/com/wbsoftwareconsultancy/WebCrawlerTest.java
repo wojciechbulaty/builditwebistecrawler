@@ -134,6 +134,21 @@ public class WebCrawlerTest {
     }
 
     @Test
+    public void doesNotCrawlTheSamePageTwice() throws Exception {
+        wm.stubFor(get(urlEqualTo("/"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "text/html; charset=utf-8")
+                        .withBody("<html><body><a href=\"" + "http://localhost:" + WIREMOCK_PORT + "\"></a></body></html>")));
+
+        WebElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
+
+        assertNotNull(page);
+        assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +
+                "External domain links: none\n");
+    }
+
+    @Test
     public void supportsOnlyRootUrls() throws Exception {
         try {
             new WebCrawler().crawl("/aRelativeUrl");

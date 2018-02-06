@@ -17,7 +17,6 @@ import static java.util.stream.Collectors.toList;
 
 public class WebCrawler {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebCrawler.class);
-    private static final CrawlElement ALREADY_SEEN = null;
 
     public static void main(String[] args) throws IOException {
         CrawlElement crawl = new WebCrawler().crawl(args[0]);
@@ -33,9 +32,6 @@ public class WebCrawler {
     }
 
     private CrawlElement crawlPage(String crawlUrl, String rootDomainUrl, Set<String> alreadyCrawledUrls) throws IOException {
-        if (alreadyCrawledUrls.contains(crawlUrl)) {
-            return ALREADY_SEEN;
-        }
         alreadyCrawledUrls.add(crawlUrl);
 
         LOGGER.info("Crawling " + crawlUrl);
@@ -52,8 +48,8 @@ public class WebCrawler {
                 .filter(WebCrawler::nonFragmentUrl)
                 .filter(url -> isSameDomain(url, rootDomainUrl))
                 .map(url -> appendDomainIfNeeded(crawlUrl, rootDomainUrl, url))
+                .filter(url -> !alreadyCrawledUrls.contains(url))
                 .map(url -> crawlPageOrHandleException(url, rootDomainUrl, alreadyCrawledUrls))
-                .filter(WebCrawler::alreadySeen)
                 .collect(toList());
 
         List<String> externalDomainLinks = links.stream()
@@ -92,9 +88,5 @@ public class WebCrawler {
 
     private static boolean nonFragmentUrl(String url) {
         return !url.startsWith("#");
-    }
-
-    private static boolean alreadySeen(CrawlElement webElement) {
-        return webElement != ALREADY_SEEN;
     }
 }

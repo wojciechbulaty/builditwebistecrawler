@@ -25,7 +25,7 @@ public class WebCrawlerTest {
                         .withHeader("Content-Type", "text/html; charset=utf-8")
                         .withBody("<html><body>Hello world!</body></html>")));
 
-        WebElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
+        CrawlElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
 
         assertNotNull(page);
         assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +
@@ -45,7 +45,7 @@ public class WebCrawlerTest {
                         .withHeader("Content-Type", "text/html; charset=utf-8")
                         .withBody("<html><body>This is contact!</body></html>")));
 
-        WebElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
+        CrawlElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
 
         assertNotNull(page);
         assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +
@@ -65,7 +65,7 @@ public class WebCrawlerTest {
                         .withHeader("Content-Type", "text/html; charset=utf-8")
                         .withBody("<html><body><a href=\"http://google.com\"></a><a href=\"http://twitter.com\"></a></body></html>")));
 
-        WebElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
+        CrawlElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
 
         assertNotNull(page);
         assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +
@@ -87,7 +87,7 @@ public class WebCrawlerTest {
                 .willReturn(aResponse()
                         .withStatus(200)));
 
-        WebElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
+        CrawlElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
 
         assertNotNull(page);
         assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +
@@ -104,7 +104,7 @@ public class WebCrawlerTest {
                         .withHeader("Content-Type", "text/html; charset=utf-8")
                         .withBody("<html><body><a href=\"#whatever\"></a></body></html>")));
 
-        WebElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
+        CrawlElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
 
         assertNotNull(page);
         assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +
@@ -124,7 +124,7 @@ public class WebCrawlerTest {
                         .withHeader("Content-Type", "text/html; charset=utf-8")
                         .withBody("<html><body>This is contact!</body></html>")));
 
-        WebElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
+        CrawlElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
 
         assertNotNull(page);
         assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +
@@ -141,7 +141,7 @@ public class WebCrawlerTest {
                         .withHeader("Content-Type", "text/html; charset=utf-8")
                         .withBody("<html><body><a href=\"" + "http://localhost:" + WIREMOCK_PORT + "\"></a></body></html>")));
 
-        WebElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
+        CrawlElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
 
         assertNotNull(page);
         assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +

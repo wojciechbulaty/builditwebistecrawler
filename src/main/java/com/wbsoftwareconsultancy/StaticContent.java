@@ -1,6 +1,6 @@
 package com.wbsoftwareconsultancy;
 
-public class StaticContent implements WebElement {
+public class StaticContent extends CrawlElement {
     private final String url;
 
     public StaticContent(String url) {
@@ -8,12 +8,7 @@ public class StaticContent implements WebElement {
     }
 
     @Override
-    public String asString() {
-        return asString(0);
-    }
-
-    @Override
     public String asString(int indent) {
-        return WebElement.padding(indent) + "Static file " + url;
+        return padding(indent) + "Static file " + url;
     }
 }

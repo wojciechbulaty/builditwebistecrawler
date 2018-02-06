@@ -16,16 +16,16 @@ import static java.util.stream.Collectors.toList;
 
 public class WebCrawler {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebCrawler.class);
-    private static final WebElement ALREADY_SEEN = null;
+    private static final CrawlElement ALREADY_SEEN = null;
 
-    public WebElement crawl(String rootUrl) throws IOException {
+    public CrawlElement crawl(String rootUrl) throws IOException {
         if (!rootUrl.startsWith("http")) {
             throw new IllegalArgumentException("The url should start with http");
         }
         return crawlPage(rootUrl, rootUrl, synchronizedSet(new HashSet<>()));
     }
 
-    private WebElement crawlPage(String crawlUrl, String rootUrl, Set<String> alreadyCrawledUrls) throws IOException {
+    private CrawlElement crawlPage(String crawlUrl, String rootUrl, Set<String> alreadyCrawledUrls) throws IOException {
         if (alreadyCrawledUrls.contains(crawlUrl)) {
             return ALREADY_SEEN;
         }
@@ -40,7 +40,7 @@ public class WebCrawler {
         }
         Elements links = connect.get().select("a");
 
-        List<WebElement> subPages = links.parallelStream()
+        List<CrawlElement> subPages = links.parallelStream()
                 .map(element -> element.attr("href"))
                 .filter(url -> !url.startsWith("#"))
                 .filter(url -> url.startsWith(rootUrl) || !url.startsWith("http"))
@@ -59,7 +59,7 @@ public class WebCrawler {
         return new Page(crawlUrl, subPages, externalDomainLinks);
     }
 
-    public WebElement crawlPageOrHandleException(String url, String rootUrl, Set<String> alreadyCrawledUrls) {
+    public CrawlElement crawlPageOrHandleException(String url, String rootUrl, Set<String> alreadyCrawledUrls) {
         try {
             return crawlPage(url, rootUrl, alreadyCrawledUrls);
         } catch (IOException e) {
@@ -70,7 +70,7 @@ public class WebCrawler {
     }
 
     public static void main(String[] args) throws IOException {
-        WebElement crawl = new WebCrawler().crawl(args[0]);
+        CrawlElement crawl = new WebCrawler().crawl(args[0]);
         System.out.println("=============================================================");
         System.out.println(crawl.asString());
     }

@@ -8,15 +8,15 @@ I am assuming you want me to write some code, so I will write the crawler code
 but I will use jsoup to help me with that.
 
 # Building the project
-
+```
 mvn clean install
-
+```
 # Run the web crawler
-
+```
 mvn clean install
 cd target
 unzip release.zip
-
+```
 # What I would do next?
 
 * Run the build on Windows

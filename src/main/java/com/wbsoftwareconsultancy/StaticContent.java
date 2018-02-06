@@ -9,7 +9,7 @@ public class StaticContent implements WebElement {
 
     @Override
     public String asString() {
-        return url;
+        return asString(0);
     }
 
     @Override

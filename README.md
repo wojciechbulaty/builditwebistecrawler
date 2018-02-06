@@ -24,3 +24,5 @@ What I would do next?
 * Discuss the API with the stakeholders to see if this tools is what they
 would like to use.
 * Implement sad-paths, e.g. what happens when the host does not respond or does not exist
+* Refactor WebElement, it has got a few code smells
+* Implement all the ignored tests in WebCrawlerTest (after consulting with the business)

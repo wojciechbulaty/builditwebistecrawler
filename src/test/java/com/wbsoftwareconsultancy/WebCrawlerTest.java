@@ -74,7 +74,7 @@ public class WebCrawlerTest {
 
     @Test
     // (...) links to static content such as images for each respective page.
-    public void fetchesImages() throws Exception {
+    public void fetchesStaticContent() throws Exception {
         wm.stubFor(get(urlEqualTo("/"))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -94,6 +94,43 @@ public class WebCrawlerTest {
                 "External domain links: none\n" +
                 "    Static file http://localhost:9999/img.jpg\n" +
                 "    Static file http://localhost:9999/img.png");
+    }
+
+    @Test
+    public void doesNotFollowHashLinks() throws Exception {
+        wm.stubFor(get(urlEqualTo("/"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "text/html; charset=utf-8")
+                        .withBody("<html><body><a href=\"#whatever\"></a></body></html>")));
+
+        WebElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
+
+        assertNotNull(page);
+        assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +
+                "External domain links: none\n");
+    }
+
+    @Test
+    public void followsAbsoluteLinksToTheSameDomain() throws Exception {
+        wm.stubFor(get(urlEqualTo("/"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "text/html; charset=utf-8")
+                        .withBody("<html><body><a href=\"http://localhost:" + WIREMOCK_PORT + "/contact.html\"></a></body></html>")));
+        wm.stubFor(get(urlEqualTo("/contact.html"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "text/html; charset=utf-8")
+                        .withBody("<html><body>This is contact!</body></html>")));
+
+        WebElement page = new WebCrawler().crawl("http://localhost:" + WIREMOCK_PORT);
+
+        assertNotNull(page);
+        assertThat(page.asString()).isEqualTo("Page http://localhost:" + WIREMOCK_PORT + "\n" +
+                "External domain links: none\n" +
+                "    Page http://localhost:" + WIREMOCK_PORT + "/contact.html\n" +
+                "    External domain links: none\n");
     }
 
     @Test
@@ -139,12 +176,6 @@ public class WebCrawlerTest {
     @Test
     @Ignore
     public void followsRelativeLinks() throws Exception {
-        fail("TODO");
-    }
-
-    @Test
-    @Ignore
-    public void followsAbsoluteLinksToTheSameDomain() throws Exception {
         fail("TODO");
     }
 

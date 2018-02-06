@@ -13,7 +13,7 @@ mvn clean package
 ```
 # Run the web crawler on Linux
 ```
-mvn clean install
+mvn clean package
 java -cp target/buildit-webiste-crawler-1.0-SNAPSHOT-jar-with-dependencies.jar com.wbsoftwareconsultancy.WebCrawler http://wiprodigital.com
 ```
 # What I would do next?
